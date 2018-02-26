@@ -3,5 +3,8 @@
 export(get_demo_bedGraph_files)
 export(get_demo_peaks_file)
 export(import_bedgraphs)
+export(import_peaks)
 import(purrr)
 import(rtracklayer)
+import(stringr)
+import(tools)
