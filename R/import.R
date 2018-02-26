@@ -37,6 +37,10 @@ import_bedgraphs <- function(filenames,
 #' Only works for .narrowPeak or .broadPeak file formats.
 #'
 #' @param filenames Paths to the peak files.
+#' @param genome Add seqinfo from genome (see ?fetchExtendedChromInfoFromUCSC
+#'        for the list of available genomes). Value must be NULL or a character
+#'        string (i.e.: "hg38").
+#' @param keep_standard_chromosomes Remove alternative chromosomes? (Default: TRUE)
 #'
 #' @return A list of GRanges (one element per file).
 #'
@@ -49,9 +53,22 @@ import_bedgraphs <- function(filenames,
 #' @import tools
 #'
 #' @export
-import_peaks <- function(filenames) {
+import_peaks <- function(filenames,
+                         genome = NULL,
+                         keep_standard_chromosomes = TRUE) {
+
     stopifnot(all(str_detect(filenames, "\\.(narrow|broad)Peak")))
     stopifnot(all(map_lgl(filenames, file.exists)))
+    if (!is.null(genome)) {
+        data(si)
+        stopifnot(is.character(genome))
+        stopifnot(length(genome) == 1)
+        stopifnot(any(names(si) == genome))
+        genome <- si[[genome]]
+        if (keep_standard_chromosomes) {
+            genome <- GenomeInfoDb::keepStandardChromosomes(genome)
+        }
+    }
 
     get_extraCols <- function(x) {
         if (x == "narrowPeak") {
@@ -70,5 +87,19 @@ import_peaks <- function(filenames) {
                      get_extraCols)
 
     names(filenames) <- file_path_sans_ext(basename(filenames))
-    map2(filenames, extraCols, ~ import(.x, extraCols = .y, format = "BED"))
+
+    import_fun <- function(filename, extraCols) {
+        if (!is.null(genome)) {
+            peak <- import(filename, extraCols = extraCols, format = "BED",
+                           genome = genome)
+        } else {
+            peak <- import(filename, extraCols = extraCols, format = "BED")
+        }
+        if (keep_standard_chromosomes) {
+            peak <- GenomeInfoDb::keepStandardChromosomes(peak)
+        }
+        peak
+    }
+
+    map2(filenames, extraCols, import_fun)
 }
