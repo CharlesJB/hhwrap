@@ -21,9 +21,7 @@ A list of GRanges (one element per file).
 Import bedgraph files
 }
 \examples{
-\dontrun{
-    filenames <- c("file1.bg", "file2.bg")
-    cov <- import_bedgraphs(filenames)
-}
+filenames <- get_demo_bedGraph_files()
+cov <- import_bedgraphs(filenames)
 
 }
