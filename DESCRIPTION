@@ -1,4 +1,4 @@
-Package: hhwrap
+Package: hmwrap
 Title: Wrapper Functions for ChIP-Seq Heatmaps
 Version: 0.0.0.9000
 Authors@R: person("Charles", "Joly Beauparlant", email = "Charles.Joly-Beauparlant@crchul.ulaval.ca", role = c("aut", "cre"))
