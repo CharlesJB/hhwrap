@@ -4,10 +4,10 @@
 \alias{import_peaks}
 \title{Import peak files}
 \usage{
-import_peaks(filenames, genome = NULL, keep_standard_chromosomes = TRUE)
+import_peaks(filename, genome = NULL, keep_standard_chromosomes = TRUE)
 }
 \arguments{
-\item{filenames}{Paths to the peak files.}
+\item{filename}{Path to the peak file.}
 
 \item{genome}{Add seqinfo from genome (see ?fetchExtendedChromInfoFromUCSC
 for the list of available genomes). Value must be NULL or a character
@@ -16,7 +16,7 @@ string (i.e.: "hg38").}
 \item{keep_standard_chromosomes}{Remove alternative chromosomes? (Default: TRUE)}
 }
 \value{
-A list of GRanges (one element per file).
+A GRanges corresponding the regions in the peak file.
 }
 \description{
 Only works for .narrowPeak or .broadPeak file formats.

@@ -36,13 +36,13 @@ import_bedgraphs <- function(filenames,
 #'
 #' Only works for .narrowPeak or .broadPeak file formats.
 #'
-#' @param filenames Paths to the peak files.
+#' @param filename Path to the peak file.
 #' @param genome Add seqinfo from genome (see ?fetchExtendedChromInfoFromUCSC
 #'        for the list of available genomes). Value must be NULL or a character
 #'        string (i.e.: "hg38").
 #' @param keep_standard_chromosomes Remove alternative chromosomes? (Default: TRUE)
 #'
-#' @return A list of GRanges (one element per file).
+#' @return A GRanges corresponding the regions in the peak file.
 #'
 #' @examples
 #' peaks_file <- get_demo_peaks_file()
@@ -53,12 +53,14 @@ import_bedgraphs <- function(filenames,
 #' @import tools
 #'
 #' @export
-import_peaks <- function(filenames,
+import_peaks <- function(filename,
                          genome = NULL,
                          keep_standard_chromosomes = TRUE) {
 
-    stopifnot(all(str_detect(filenames, "\\.(narrow|broad)Peak")))
-    stopifnot(all(map_lgl(filenames, file.exists)))
+    stopifnot(length(filename) == 1)
+    stopifnot(file.exists(filename))
+    stopifnot(str_detect(filename, "\\.(narrow|broad)Peak"))
+
     if (!is.null(genome)) {
         data(si)
         stopifnot(is.character(genome))
@@ -82,24 +84,16 @@ import_peaks <- function(filenames,
               qValue = "numeric")
         }
     }
+    extraCols <- get_extraCols(str_extract(filename, "narrowPeak$|broadPeak$"))
 
-    extraCols <- map(str_extract(filenames, "narrowPeak$|broadPeak$"),
-                     get_extraCols)
-
-    names(filenames) <- file_path_sans_ext(basename(filenames))
-
-    import_fun <- function(filename, extraCols) {
-        if (!is.null(genome)) {
-            peak <- import(filename, extraCols = extraCols, format = "BED",
-                           genome = genome)
-        } else {
-            peak <- import(filename, extraCols = extraCols, format = "BED")
-        }
-        if (keep_standard_chromosomes) {
-            peak <- GenomeInfoDb::keepStandardChromosomes(peak)
-        }
-        peak
+    if (!is.null(genome)) {
+        peak <- import(filename, extraCols = extraCols, format = "BED",
+                       genome = genome)
+    } else {
+        peak <- import(filename, extraCols = extraCols, format = "BED")
     }
-
-    map2(filenames, extraCols, import_fun)
+    if (keep_standard_chromosomes) {
+        peak <- GenomeInfoDb::keepStandardChromosomes(peak)
+    }
+    peak
 }
