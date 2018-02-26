@@ -7,3 +7,7 @@ Depends: R (>= 3.4.2)
 License: Artistic-2.0
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.0.1
+Imports:
+    rtracklayer,
+    purrr
