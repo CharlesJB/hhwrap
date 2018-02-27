@@ -4,19 +4,19 @@
 \alias{coverage_2_matrix}
 \title{Convert coverages to matrix}
 \usage{
-coverage_2_matrix(coverage, peaks, ncol = 100)
+coverage_2_matrix(coverage, gr, ncol = 100)
 }
 \arguments{
 \item{coverage}{A single coverage obtained with the import_bedgraphs
 function.}
 
-\item{peaks}{A GRanges corresponding to the subset of regions to subset
+\item{gr}{A GRanges corresponding to the subset of regions to subset
 the coverages.}
 
 \item{ncol}{The number of columns in the result matrix. (Default = 100).}
 }
 \value{
-A matrix with ncol columns and length(peaks) rows.
+A matrix with ncol columns and length(gr) rows.
 }
 \description{
 Convert coverages to matrix
@@ -25,7 +25,7 @@ Convert coverages to matrix
 filenames <- get_demo_bedGraph_files()
 cov <- import_bedgraphs(filenames)
 
-peaks <- import_peaks(get_demo_peaks_file())
-m <- coverage_2_matrix(cov[[1]], peaks)
+gr <- import_peaks(get_demo_peaks_file())
+m <- coverage_2_matrix(cov[[1]], gr)
 
 }
