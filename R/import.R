@@ -3,6 +3,7 @@
 #' @param filenames Paths to the bedGraph files.
 #' @param filter_negative_coverages Convert negative coverage values to 0? (Default: TRUE)
 #' @param keep_standard_chromosomes Remove alternative chromosomes? (Default: TRUE)
+
 #'
 #' @return A list of GRanges (one element per file).
 #'
@@ -16,12 +17,20 @@
 #' @export
 import_bedgraphs <- function(filenames,
                              filter_negative_coverages = TRUE,
-                             keep_standard_chromosomes = TRUE) {
+                             keep_standard_chromosomes = TRUE,
+                             genome = NULL) {
     stopifnot(all(map_lgl(filenames, file.exists)))
     stopifnot(is.logical(keep_standard_chromosomes))
     stopifnot(is.logical(filter_negative_coverages))
 
-    gr <- map(filenames, import, format = "bedGraph")
+    genome <- get_si(genome, keep_standard_chromosomes)
+
+    if (!is.null(genome)) {
+        gr <- map(filenames, import, format = "bedGraph", genome = genome)
+    } else {
+        gr <- map(filenames, import, format = "bedGraph")
+    }
+
     if (filter_negative_coverages) {
         gr <- map(gr, ~ { .x$score[.x$score < 0] <- 0; .x; })
     }
@@ -50,7 +59,6 @@ import_bedgraphs <- function(filenames,
 #'
 #' @import rtracklayer
 #' @import stringr
-#' @import tools
 #'
 #' @export
 import_peaks <- function(filename,
@@ -61,16 +69,7 @@ import_peaks <- function(filename,
     stopifnot(file.exists(filename))
     stopifnot(str_detect(filename, "\\.(narrow|broad)Peak"))
 
-    if (!is.null(genome)) {
-        data(si)
-        stopifnot(is.character(genome))
-        stopifnot(length(genome) == 1)
-        stopifnot(any(names(si) == genome))
-        genome <- si[[genome]]
-        if (keep_standard_chromosomes) {
-            genome <- GenomeInfoDb::keepStandardChromosomes(genome)
-        }
-    }
+    genome <- get_si(genome, keep_standard_chromosomes)
 
     get_extraCols <- function(x) {
         if (x == "narrowPeak") {
@@ -96,4 +95,18 @@ import_peaks <- function(filename,
         peak <- GenomeInfoDb::keepStandardChromosomes(peak)
     }
     peak
+}
+
+get_si <- function(genome, keep_standard_chromosomes) {
+    if (!is.null(genome)) {
+        data(si)
+        stopifnot(is.character(genome))
+        stopifnot(length(genome) == 1)
+        stopifnot(any(names(si) == genome))
+        genome <- si[[genome]]
+        if (keep_standard_chromosomes) {
+            genome <- GenomeInfoDb::keepStandardChromosomes(genome)
+        }
+    }
+    genome
 }

@@ -5,7 +5,7 @@
 \title{Import bedgraph files}
 \usage{
 import_bedgraphs(filenames, filter_negative_coverages = TRUE,
-  keep_standard_chromosomes = TRUE)
+  keep_standard_chromosomes = TRUE, genome = NULL)
 }
 \arguments{
 \item{filenames}{Paths to the bedGraph files.}
