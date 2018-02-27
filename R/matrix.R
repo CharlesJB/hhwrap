@@ -39,18 +39,18 @@ intoNbins <- function(gr, n = 10) {
 #'
 #' @param coverage A single coverage obtained with the import_bedgraphs
 #'                 function.
-#' @param peaks A GRanges corresponding to the subset of regions to subset
+#' @param gr A GRanges corresponding to the subset of regions to subset
 #'              the coverages.
 #' @param ncol The number of columns in the result matrix. (Default = 100).
 #'
-#' @return A matrix with ncol columns and length(peaks) rows.
+#' @return A matrix with ncol columns and length(gr) rows.
 #'
 #' @examples
 #' filenames <- get_demo_bedGraph_files()
 #' cov <- import_bedgraphs(filenames)
 #' 
-#' peaks <- import_peaks(get_demo_peaks_file())
-#' m <- coverage_2_matrix(cov[[1]], peaks)
+#' gr <- import_peaks(get_demo_peaks_file())
+#' m <- coverage_2_matrix(cov[[1]], gr)
 #'
 #' @import purrr
 #' @importFrom GenomicRanges findOverlaps
@@ -60,23 +60,23 @@ intoNbins <- function(gr, n = 10) {
 #' @import GenomeInfoDb
 #'
 #' @export
-coverage_2_matrix <- function(coverage, peaks, ncol = 100) {
-    stopifnot(is(peaks, "GRanges"))
-    stopifnot(all(GenomicRanges::width(peaks) >= ncol))
+coverage_2_matrix <- function(coverage, gr, ncol = 100) {
+    stopifnot(is(gr, "GRanges"))
+    stopifnot(all(GenomicRanges::width(gr) >= ncol))
 
-    i <- S4Vectors::queryHits(GenomicRanges::findOverlaps(coverage, peaks))
+    i <- S4Vectors::queryHits(GenomicRanges::findOverlaps(coverage, gr))
     coverage <- coverage[i]
     coverage <- GenomicRanges::coverage(coverage, weight = coverage$score)
 
-    peaks <- split(peaks, as.character(seqnames(peaks)))
+    gr <- split(gr, as.character(seqnames(gr)))
 
     extract_scores <- function(n) {
-        gr <- intoNbins(peaks[[n]], n = ncol)
+        binned_gr <- intoNbins(gr[[n]], n = ncol)
         cov <- coverage[[n]]
-        view <- Views(cov, start(gr), end(gr))
+        view <- Views(cov, start(binned_gr), end(binned_gr))
         matrix(viewMeans(view), ncol = ncol, byrow = TRUE)
     }
-    m <- map(names(peaks), extract_scores)
+    m <- map(names(gr), extract_scores)
     m <- do.call("rbind", m)
     m[is.nan(m)] <- 0
     m
