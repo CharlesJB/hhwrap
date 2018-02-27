@@ -7,6 +7,8 @@
 intoNbins(gr, n = 10)
 }
 \arguments{
+\item{gr}{A GRanges with only one seqnames value.}
+
 \item{n}{Number of bins to produce.}
 }
 \value{
@@ -15,9 +17,6 @@ A GRanges object splitted into N bins
 \description{
 Originally posted by Martin Morgan:
 https://stat.ethz.ch/pipermail/bioconductor/2012-September/047923.html
-}
-\details{
-Wparam gr A GRanges with only one seqnames value.
 }
 \examples{
   gr <- GRanges("chr1", IRanges(c(100, 300), c(200, 500))

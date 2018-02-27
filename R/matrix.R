@@ -3,7 +3,7 @@
 #' Originally posted by Martin Morgan:
 #' https://stat.ethz.ch/pipermail/bioconductor/2012-September/047923.html
 #'
-#' Wparam gr A GRanges with only one seqnames value.
+#' @param gr A GRanges with only one seqnames value.
 #' @param n Number of bins to produce.
 #'
 #' @return
