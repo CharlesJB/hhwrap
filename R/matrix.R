@@ -39,8 +39,8 @@ intoNbins <- function(gr, n = 10) {
 #'
 #' @param coverage A single coverage obtained with the import_bedgraphs
 #'                 function.
-#' @param gr A GRanges corresponding to the subset of regions to subset
-#'           the coverages. All the regions must have the same width (see
+#' @param gr A GRanges corresponding to the regions to subset the coverages.
+#'           All the regions must have the same width (see
 #'           ?GenomicRanges::resize to resize regions).
 #' @param ncol The number of columns in the result matrix. (Default = 100).
 #'
