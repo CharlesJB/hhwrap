@@ -77,5 +77,7 @@ coverage_2_matrix <- function(coverage, peaks, ncol = 100) {
         matrix(viewMeans(view), ncol = ncol, byrow = TRUE)
     }
     m <- map(names(peaks), extract_scores)
-    do.call("rbind", m)
+    m <- do.call("rbind", m)
+    m[is.nan(m)] <- 0
+    m
 }
