@@ -11,7 +11,8 @@ coverage_2_matrix(coverage, gr, ncol = 100)
 function.}
 
 \item{gr}{A GRanges corresponding to the subset of regions to subset
-the coverages.}
+the coverages. All the regions must have the same width (see
+?GenomicRanges::resize to resize regions).}
 
 \item{ncol}{The number of columns in the result matrix. (Default = 100).}
 }

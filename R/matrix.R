@@ -40,7 +40,8 @@ intoNbins <- function(gr, n = 10) {
 #' @param coverage A single coverage obtained with the import_bedgraphs
 #'                 function.
 #' @param gr A GRanges corresponding to the subset of regions to subset
-#'              the coverages.
+#'           the coverages. All the regions must have the same width (see
+#'           ?GenomicRanges::resize to resize regions).
 #' @param ncol The number of columns in the result matrix. (Default = 100).
 #'
 #' @return A matrix with ncol columns and length(gr) rows.
@@ -54,6 +55,7 @@ intoNbins <- function(gr, n = 10) {
 #'
 #' @import purrr
 #' @importFrom GenomicRanges findOverlaps
+#' @importFrom GenomicRanges width
 #' @importFrom S4Vectors queryHits
 #' @importFrom IRanges Views
 #' @importFrom IRanges viewMeans
@@ -62,7 +64,8 @@ intoNbins <- function(gr, n = 10) {
 #' @export
 coverage_2_matrix <- function(coverage, gr, ncol = 100) {
     stopifnot(is(gr, "GRanges"))
-    stopifnot(all(GenomicRanges::width(gr) >= ncol))
+    stopifnot(all(width(gr) >= ncol))
+    stopifnot(length(unique(width(gr))) == 1)
 
     i <- S4Vectors::queryHits(GenomicRanges::findOverlaps(coverage, gr))
     coverage <- coverage[i]
