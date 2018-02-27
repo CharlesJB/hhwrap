@@ -1,6 +1,6 @@
 Package: hmwrap
 Title: Wrapper Functions for ChIP-Seq Heatmaps
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: person("Charles", "Joly Beauparlant", email = "Charles.Joly-Beauparlant@crchul.ulaval.ca", role = c("aut", "cre"))
 Description: Utility functions to make it easier to create heatmaps from bedgraphs and peak list.
 Depends: R (>= 3.4.2)
@@ -10,4 +10,6 @@ LazyData: true
 RoxygenNote: 6.0.1
 Imports:
     rtracklayer,
+    GenomicRanges,
+    stringr,
     purrr
