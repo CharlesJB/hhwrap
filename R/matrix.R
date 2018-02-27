@@ -49,7 +49,7 @@ intoNbins <- function(gr, n = 10) {
 #' @examples
 #' filenames <- get_demo_bedGraph_files()
 #' cov <- import_bedgraphs(filenames)
-#' 
+#'
 #' gr <- import_peaks(get_demo_peaks_file())
 #' m <- coverage_2_matrix(cov[[1]], gr)
 #'
@@ -82,5 +82,48 @@ coverage_2_matrix <- function(coverage, gr, ncol = 100) {
     m <- map(names(gr), extract_scores)
     m <- do.call("rbind", m)
     m[is.nan(m)] <- 0
+    m
+}
+
+#' Add metadata to matrix for ComplexHeatmap
+#'
+#' @param m The matrix to update.
+#' @param gr A GRanges corresponding to the regions to subset the coverages.
+#'           All the regions must have the same width (see
+#'           ?GenomicRanges::resize to resize regions).
+#' @param target_name The name of the center region of the matrix. Will be
+#'                    shown at the bottom of the matrix.
+#' @param signal_name The name of the matrix. Will be shown on top of the
+#'                    matrix.
+#'
+#' @return
+#'   A normalizedMatrix ready to be used with ComplexHeatmap.
+#'
+#' @import ComplexHeatmap
+#' @importFrom GenomicRanges width
+#'
+#' @examples
+#' filenames <- get_demo_bedGraph_files()
+#' cov <- import_bedgraphs(filenames)
+#'
+#' gr <- import_peaks(get_demo_peaks_file())
+#' m <- coverage_2_matrix(cov[[1]], gr)
+#' m <- add_matrix_metadata(m, gr, "TSS", "Peaks")
+add_matrix_metadata <- function(m, gr, target_name, signal_name) {
+    stopifnot(length(unique(width(gr))) == 1)
+    stopifnot(is.character(target_name))
+    stopifnot(nchar(target_name) > 0)
+    stopifnot(is.character(signal_name))
+    stopifnot(nchar(signal_name) > 0)
+
+    peak_width <- width(gr)[1]
+    x <- round(peak_width/2)
+    attr(m, "upstream_index") <- -x:0
+    attr(m, "target_index") <- integer(0)
+    attr(m, "downstream_index") <- 1:x
+    attr(m, "extend") <- c(x, x)
+    attr(m, "target_name") <- target_name
+    attr(m, "signal_name") <- signal_name
+    class(m) <- c("normalizedMatrix", "matrix")
     m
 }
